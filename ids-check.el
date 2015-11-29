@@ -20,14 +20,11 @@
 
 ;;; Commentary:
 
-;;
+;; This tools checks validity of IDS data.
 
 ;;; Usage
 
-;; (% git submodule add https://github.com/kawabata/ids ids)
-;;
-;; % cask install
-;; % cask exec emacs ids-check.el --script ids-check file1.txt file2.txt,1,3 file3.txt...
+;; Set IDS file locations to `ids-check-files' variable.
 
 ;;; Code:
 
@@ -42,6 +39,9 @@
   :group 'ids-check)
 
 (defvar ids-check-table nil)
+
+(declare-function 'ids-check2 "ids-check2")
+(defvar ids-check-use-check2 nil)
 
 (defun ids-check ()
   "Check IDS of specified files."
@@ -68,7 +68,8 @@
                (id (elt line id-col))
                (ids (elt line ids-col)))
           (when (ids-check-ids id ids)
-            (ids-check-id-ids id ids)))))))
+            (and ids-check-use-check2 (ids-check2 id ids))
+            (ids-check-unification id ids)))))))
 
 (defun ids-check-ids (id ids)
   "For ID, check validity of IDS.
@@ -85,7 +86,7 @@ Return nil if it is invalid."
      (message "%s (%s) : %s" id ids (error-message-string err))
      nil)))
 
-(defun ids-check-id-ids (id ids)
+(defun ids-check-unification (id ids)
   "Check validity of ID and IDS."
   (dolist (ids-norm (ids-normalize ids))
     (when (= (length ids-norm) 1)
@@ -93,7 +94,7 @@ Return nil if it is invalid."
                id ids ids-norm (string-to-char ids-norm)))
     (-when-let (id2 (gethash ids-norm ids-check-table))
       (message "%s (%s) may be unifiable with %s." id ids id2))
-    (cl-pushnew id (gethash ids-norm ids-check-table))))
+    (cl-pushnew id (gethash ids-norm ids-check-table) :test 'equal)))
 
 (when noninteractive (ids-check))
 

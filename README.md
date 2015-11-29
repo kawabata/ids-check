@@ -25,12 +25,8 @@ data text file and run the following.
 *Files* should be tab-separated `Identifier vs IDS' data. When
 multiple files are specified, they are all checked against each other.
 
-Each file is assumed that, in each tab-separated line, an identifier
-and an IDS are placed at *first* and *second* column, respectively.
-
-If an identifier or an IDS are **not** placed in such column position,
-you can specify columns by attaching ",num,num" at the end of each
-file.
+If an identifier or an IDS are **not** placed in proper columns, you
+can specify columns by attaching **",num,num"** at the end of each file.
 
 For example, if your IDS data contains identifier and IDS in 1st and
 3rd columns, as
@@ -39,4 +35,14 @@ then you can specify as following.
 
 ```
 % cask exec emacs --script ids-check.el extf-ids.txt,1,3
+```
+
+## Compiling IDS database for faster checking
+
+You can run the following command (assuming that your shell can expand
+"**", e.g. zsh) to compile IDS database and significantly accelerate
+the checking time.
+
+```
+% cask exec emacs -batch -f batch-byte-compile ./.cask/**/ids-db.el
 ```
