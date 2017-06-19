@@ -29,6 +29,8 @@
 ;;; Code:
 
 (require 'ids-db)
+(require 'ids-normalize)
+(eval-and-compile (require 'cl))
 (require 'dash)
 
 (unless (string< "24.3" emacs-version)
@@ -40,7 +42,7 @@
 
 (defvar ids-check-table nil)
 
-(declare-function 'ids-check2 "ids-check2")
+(declare-function ids-check2 "ids-check2")
 (defvar ids-check-use-check2 nil)
 
 (defun ids-check ()
@@ -78,10 +80,11 @@ Return nil if it is invalid."
       (if (/= (length (ids-split-string ids)) 1)
           (error "Verbose IDS!")
         (if (string-match
-             "[^αℓ△①-⑳⺀-⺼⿰-⿻々〇〢いよキサ㇀㇉㇎㇞㇢㐀-鿩-欄-龎𠀀-𪘀]"
+             "[^αℓ△①-⑳⺀-⺼⿰-⿻々〇〢いよキサ㇀㇇㇉㇎㇞㇢㐀-鿩-豈-龎𠀀-𪘀]"
              ids)
             (error (format "Invalid DC! (%s)" (match-string 0 ids)))
-          t))
+          t)
+        )
     (error
      (message "%s (%s) : %s" id ids (error-message-string err))
      nil)))

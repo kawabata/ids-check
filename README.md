@@ -36,13 +36,3 @@ then you can specify as following.
 ```
 % cask exec emacs --script ids-check.el extf-ids.txt,1,3
 ```
-
-## Compiling IDS database for faster checking
-
-You can run the following command (assuming that your shell can expand
-"**", e.g. zsh) to compile IDS database and significantly accelerate
-the checking time.
-
-```
-% cask exec emacs -batch -f batch-byte-compile ./.cask/**/ids-db.el
-```
