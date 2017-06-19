@@ -1,5 +1,5 @@
 (source gnu)
-(source melpa)
+(source melpa "http://melpa.org/packages")
 
 (depends-on "dash")
 (depends-on "ids-edit")
