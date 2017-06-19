@@ -30,7 +30,7 @@
 
 (require 'ids-db)
 (require 'ids-normalize)
-(eval-and-compile (require 'cl))
+(eval-when-compile (require 'cl))
 (require 'dash)
 
 (unless (string< "24.3" emacs-version)
@@ -53,6 +53,18 @@
     (setq ids-check-files argv))
   (dolist (file ids-check-files)
     (ids-check-file file)))
+
+(defun ids-replace-cdp ()
+  "Replace &CDP-XXXX; entity references to PUA characters."
+  (goto-char (point-min))
+  (while (re-search-forward
+          "&CDP-\\(..\\)\\(..\\);" nil t)
+    (let* ((x (string-to-number (match-string 1) 16))
+           (y (string-to-number (match-string 2) 16))
+           (x (+ (* (- x #x81) 157)
+                 (if (< y 129) (- y 64) (- y 98))
+                 #xeeb8)))
+      (replace-match (char-to-string x)))))
 
 (defun ids-check-file (file)
   "Check IDS of FILE."
@@ -80,7 +92,7 @@ Return nil if it is invalid."
       (if (/= (length (ids-split-string ids)) 1)
           (error "Verbose IDS!")
         (if (string-match
-             "[^αℓ△①-⑳⺀-⺼⿰-⿻々〇〢いよキサ㇀㇇㇉㇎㇞㇢㐀-鿩-豈-龎𠀀-𪘀]"
+             "[^αℓ△①-⑳⺀-⺼⿰-⿻々㇣〢いよキサ㇀㇇㇉㇎㇞㇢㐀-鿩-豈-龎𠀀-𪘀]"
              ids)
             (error (format "Invalid DC! (%s)" (match-string 0 ids)))
           t)
